@@ -35,7 +35,20 @@ public class sales {
                         String[] parts = line.split(",");
 
                         if (parts.length >= 2 && parts[1].trim().equalsIgnoreCase(medToUpdate)) {
+                            // Update the quantity sold
                             parts[2] = String.valueOf(newQuantity);
+
+                            // Calculate the quantity left after sold
+                            int quantityBeforeSold = Integer.parseInt(parts[3]);
+                            parts[4] = String.valueOf(quantityBeforeSold - newQuantity);
+                            
+                            //display quantity left in stock
+                            System.out.println("Quantity left in stock: " + parts[4]);
+                            int quantityLeft = Integer.parseInt(parts[4]);
+                            
+                            //indicate if the quantity is below 5
+                            if( quantityLeft <= 4)
+                                System.out.println("There are only 5 of this medicine left. Please add more immediately");
                         }
 
                         writer.write(String.join(",", parts));
@@ -54,6 +67,7 @@ public class sales {
                     }
 
                     System.out.println("Sales updated successfully.");
+                    
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -65,16 +79,18 @@ public class sales {
                     BufferedReader reader = new BufferedReader(new FileReader("sales.csv"));
 
                     System.out.println("\nSales For This Month: ");
-                    System.out.printf("\nID  %-15s %-8s\n", "Name", "quantity sold(units)");
-                    System.out.println("--------------------------------------");
+                    System.out.printf("\nID  %-15s %-8s %-15s\n", "Name", "Quantity Sold(units)", "\t\tQuantity Left(units)");
+                    System.out.println("---------------------------------------------------------------------------------------------");
 
                     String line;
                     while ((line = reader.readLine()) != null) {
                         String[] parts = line.split(",");
 
+                        // Display all sales and quantity left
                         System.out.printf("%-3s", parts[0]);
                         System.out.printf(" %-13s", parts[1]);
-                        System.out.printf("\t   %-1s  ", parts[2]);
+                        System.out.printf("\t   %-1s", parts[2]);
+                        System.out.printf("\t\t\t\t\t%-1s", parts[4]);
                         System.out.println();
                     }
 
@@ -93,4 +109,3 @@ public class sales {
 
         scanner.close();
     }
-}

@@ -1,17 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package Compile;
-import java.io.IOException;
-import java.util.Scanner;
+import java.util.*;
+import java.io.*;
 
 public class HomepageNew {
-
+    
+    
     public static void main(String[] args) throws IOException {
         int choice;
         char exitAndContinue = 'Y';
         Scanner input = new Scanner(System.in);
+        File database = new File("database.csv");
+        File temporary = new File("database.tmp");
+        File sales = new File("sales.csv");
+        File tempSales = new File("sales.tmp");
 
         System.out.print("\n\nPHARMACY MANAGEMENT SYSTEM \t@powered by Java");
         System.out.println("\n------------------------------------------------");
@@ -28,23 +28,26 @@ public class HomepageNew {
 
                 switch (choice) {
                     case 1:
-                        DirectoryNew.addItem(args);
+                        DirectoryNew.addItem(args, database, temporary, sales, tempSales);
+                        SwapFile.swapping(database, temporary);
+                        SwapFile.swapping(sales, tempSales);
                         break;
                     case 2:
-                        DirectoryNew.searchItem(args);
+                        DirectoryNew.searchItem(args, database);
                         break;
                     case 3:
-                        DirectoryNew.displaying();
+                        DirectoryNew.displaying(database);
                         break;
                     case 4:
                         DirectoryNew.salesInfo();
                         break;
                     case 5:
-                        System.out.println("Exiting the program...");
-                        exitAndContinue = 'N';
+                        System.out.println("\nExiting the program...");
+                        System.out.println("Thank you for using our program...");
+                        System.exit(1);
                         break;
                     default:
-                        System.out.println("Invalid choice. Please choose a number between 1 and 5.");
+                        System.out.println("\nInvalid choice. Please choose a number between 1 and 5.");
                         continue; // Skip the rest of the loop and start over
                 }
 
@@ -52,16 +55,16 @@ public class HomepageNew {
                 if (input.hasNext()) {
                     exitAndContinue = input.next().charAt(0);
                 } else {
-                    System.out.println("No input available. Exiting the program...");
+                    System.out.println("\nNo input available. Exiting the program...");
                     exitAndContinue = 'N';
                 }
             } else {
-                System.out.println("Invalid input. Please enter a number between 1 and 5.");
+                System.out.println("\nInvalid input. Please enter a number between 1 and 5.");
                 input.nextLine(); // Consume the invalid input to avoid an infinite loop
             }
 
         } while (exitAndContinue != 'N');
         
-        System.out.println("Thank you for using our program...");
+        System.out.println("\nThank you for using our program...");
     }
 }

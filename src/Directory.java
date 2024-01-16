@@ -1,26 +1,21 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package Compile;
+import java.util.*;
 import java.io.*;
-import java.util.Scanner;
-/**
- *
- * @author syami
- */
-public class DirectoryNew {
-    public static void addItem(String[] args) {
 
-        File database = new File("C:\\Users\\syami\\OneDrive\\Documents\\NetBeansProjects\\eop\\src\\Compile\\database.csv");
-        File temporary = new File("C:\\Users\\syami\\OneDrive\\Documents\\NetBeansProjects\\eop\\src\\Compile\\database.tmp");
+public class Directory {
+    
+    public static void addItem(String[] args, File database, File temporary, File sales, File tempSales) {
+
         Scanner input = new Scanner(System.in);
         Scanner input1 = new Scanner(System.in);
     
         try (
             FileReader Freader = new FileReader(database);
+            FileReader SalesReader = new FileReader(sales);
             FileWriter FileWriter = new FileWriter(temporary);
+            FileWriter SalesWriter = new FileWriter(tempSales);
             BufferedReader reader = new BufferedReader(Freader);
+            BufferedReader Sreader = new BufferedReader(SalesReader);
+            BufferedWriter Swriter = new BufferedWriter(SalesWriter);
             BufferedWriter writer = new BufferedWriter(FileWriter)
         ) {
             System.out.println("\nADD ITEM");
@@ -40,6 +35,9 @@ public class DirectoryNew {
             System.out.print("Quantity: ");
             String quantity = input.next();
             input.nextLine();
+            System.out.print("Quantity Sold: ");
+            String sold = input.next();
+            input.nextLine();
             System.out.print("Expiry Date (MM/yyyy): ");
             String expiryDate = input.next();
             input.nextLine();
@@ -50,17 +48,20 @@ public class DirectoryNew {
                 writer.write(line);
                 writer.newLine();
             }
-    
-            // Add new data to the temporary file
-            writer.write(id + "," + name + "," + description + "," + usage + "," + price + "," + quantity + "," + expiryDate);
-            writer.newLine();
+
+            while((line = Sreader.readLine()) != null ) {
+                Swriter.write(line);
+                Swriter.newLine();
+            }
             
-             if(database.exists()) {
-            database.delete();
-            temporary.renameTo(database);
-        }
+            Swriter.write(id+ "," +name+ "," +sold+ "," +quantity+ "," +quantity);
+            Swriter.newLine();
+
+            // Add new data to the temporary file
+            writer.write(id + "," + name + "," + description + "," + usage + "," + price + "," + expiryDate);
+            writer.newLine();
     
-            System.out.println("Item added successfully.");
+            System.out.println("\nItem added successfully.");
     
         } catch (Exception e) {
             e.printStackTrace();
@@ -71,22 +72,11 @@ public class DirectoryNew {
         }
     }
 
-     public static void searchItem(String[] args) throws IOException {
+     public static void searchItem(String[] args, File database) throws IOException {
         
-        char update = ' ';
-        String id = " ";
-        String name = " ";
-        String description = " ";
-        String usage = " ";
-        String price = " ";
-        String quantity = " ";
-        String expiryDate = " ";
         String searchID = " ";
         String[] parts = {};
         Scanner input = new Scanner(System.in);
-        Scanner input1 = new Scanner(System.in);
-        File database = new File("C:\\Users\\syami\\OneDrive\\Documents\\NetBeansProjects\\eop\\src\\Compile\\database.csv");
-        File temporary = new File("C:\\Users\\syami\\OneDrive\\Documents\\NetBeansProjects\\eop\\src\\Compile\\database.tmp");
 
         try (FileReader Freader = new FileReader(database)) {
 
@@ -109,8 +99,7 @@ public class DirectoryNew {
                         System.out.println("Description: " + parts[2]);
                         System.out.println("Usage: " + parts[3]);
                         System.out.println("Price: " + parts[4]);
-                        System.out.println("Quantity: " + parts[5]);
-                        System.out.println("Expiry Date: " + parts[6]);
+                        System.out.println("Expiry Date: " + parts[5]);
                         return;
                     }
                 }
@@ -124,6 +113,7 @@ public class DirectoryNew {
             e.printStackTrace();
         }
 
+        /*
         System.out.print("Do you want to update the quantity of this item? (Y/N): ");
         update = input.next().charAt(0);
 
@@ -168,19 +158,21 @@ public class DirectoryNew {
 
         input.close();
         input1.close();
-    }
-     public static void displaying() {
 
-        File file = new File("C:\\Users\\syami\\OneDrive\\Documents\\NetBeansProjects\\eop\\src\\Compile\\database.csv");
+        */
+    }
+
+     public static void displaying(File database) {
+
 
         try (
-            FileReader Freader = new FileReader(file);
+            FileReader Freader = new FileReader(database);
             BufferedReader reader = new BufferedReader(Freader)
         ) { 
             String line;
 
             System.out.println("Inventory List: ");
-            System.out.printf("\nID  %-15s %-26s %-63s %7s   %6s %-8s\n%131s%s\n", "name", "description", "usage", "price", "quantity", "expiry", "", "date");
+            System.out.printf("\nID  %-15s %-26s %-68s %5s  %11s\n", "name", "description", "usage", "price", "expiry date");
             System.out.println("----------------------------------------------------------------------------------------------------------------------------------------");
 
             while ((line = reader.readLine()) != null) {
@@ -188,12 +180,11 @@ public class DirectoryNew {
                 String[] parts = line.split(",");
 
                 System.out.printf("%-3s", parts[0]);
-                System.out.printf(" %-13s", parts[1]);
+                System.out.printf(" %-15s", parts[1]);
                 System.out.printf(" %-26s", parts[2]);
                 System.out.printf(" %-68s", parts[3]);
-                System.out.printf(" %-4s ", parts[4]);
-                System.out.printf("   %-1s  ", parts[5]);
-                System.out.printf(" %-9s",parts[6]);
+                System.out.printf(" %5s ", parts[4]);
+                System.out.printf(" %-11s",parts[5]);
                 System.out.println();
                 
                 

@@ -1,11 +1,8 @@
-import java.io.File;
+import java.io.*;
 
 public class swapFile {
 
-    public static void main(String[] args) {
-        
-        File database = new File("database.csv");
-        File temporary = new File("database.tmp");
+    public static void swapping(File a, File b) {
 
         if(database.exists()) {
             database.delete();

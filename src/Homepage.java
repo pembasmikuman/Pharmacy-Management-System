@@ -1,7 +1,7 @@
 import java.util.*;
 import java.io.*;
 
-public class HomepageNew {
+public class Homepage {
     
     
     public static void main(String[] args) throws IOException {
@@ -28,18 +28,18 @@ public class HomepageNew {
 
                 switch (choice) {
                     case 1:
-                        DirectoryNew.addItem(args, database, temporary, sales, tempSales);
+                        Directory.addItem(args, database, temporary, sales, tempSales);
                         SwapFile.swapping(database, temporary);
                         SwapFile.swapping(sales, tempSales);
                         break;
                     case 2:
-                        DirectoryNew.searchItem(args, database);
+                        Directory.searchItem(args, database);
                         break;
                     case 3:
-                        DirectoryNew.displaying(database);
+                        Directory.displaying(database);
                         break;
                     case 4:
-                        DirectoryNew.salesInfo();
+                        Directory.salesInfo();
                         break;
                     case 5:
                         System.out.println("\nExiting the program...");

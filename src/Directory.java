@@ -6,7 +6,6 @@ public class Directory {
     public static void addItem(String[] args, File database, File temporary, File sales, File tempSales) {
 
         Scanner input = new Scanner(System.in);
-        Scanner input1 = new Scanner(System.in);
     
         try (
             FileReader Freader = new FileReader(database);
@@ -24,11 +23,11 @@ public class Directory {
             String id = input.next();
             input.nextLine();
             System.out.print("Name: ");
-            String name = input1.nextLine();
+            String name = input.nextLine();
             System.out.print("Description: ");
-            String description = input1.nextLine();
+            String description = input.nextLine();
             System.out.print("Usage: ");
-            String usage = input1.nextLine();
+            String usage = input.nextLine();
             System.out.print("Price: ");
             String price = input.next();
             input.nextLine();
@@ -65,14 +64,10 @@ public class Directory {
     
         } catch (Exception e) {
             e.printStackTrace();
-
-        } finally {
-            //input.close(); // Close the scanner in the finally block
-            //input1.close();
-        }
+        } 
     }
 
-     public static void searchItem(String[] args, File database) throws IOException {
+    public static void searchItem(String[] args, File database) throws IOException {
         
         String searchID = " ";
         String[] parts = {};
@@ -94,6 +89,7 @@ public class Directory {
    
                     if (parts[0].equals(searchID)) {
                         System.out.println("\nInventory Details:");
+                        System.out.println("----------------------");
                         System.out.println("ID: " + parts[0]);
                         System.out.println("Name: " + parts[1]);
                         System.out.println("Description: " + parts[2]);
@@ -113,56 +109,10 @@ public class Directory {
             e.printStackTrace();
         }
 
-        /*
-        System.out.print("Do you want to update the quantity of this item? (Y/N): ");
-        update = input.next().charAt(0);
 
-        if(update == 'Y') {
-
-            try (
-                FileReader Freader = new FileReader(database);
-                FileWriter FileWriter = new FileWriter(temporary);
-                BufferedReader reader = new BufferedReader(Freader);
-                BufferedWriter writer = new BufferedWriter(FileWriter)
-            ) {
-                
-                System.out.print("ID: ");
-                id = input.next();
-                System.out.print("Name: ");
-                name = input1.nextLine();
-                System.out.print("Description: ");
-                description = input1.nextLine();
-                System.out.print("Usage: ");
-                usage = input1.nextLine();
-                System.out.print("Price: ");
-                price = input.next();
-                System.out.print("New Quantity: ");
-                quantity = input.next();
-                System.out.print("Expiry Date (MM/yyyy): ");
-                expiryDate = input.next();
-
-                String line;
-
-                while((line = reader.readLine()) != null ) {
-                    writer.write(line);
-                    writer.newLine();
-                }
-
-                writer.write(id + "," + name + "," + description + "," + usage + "," + price + "," + quantity + "," + expiryDate);
-                writer.newLine();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        input.close();
-        input1.close();
-
-        */
     }
 
-     public static void displaying(File database) {
+    public static void displaying(File database) {
 
 
         try (
@@ -172,7 +122,7 @@ public class Directory {
             String line;
 
             System.out.println("Inventory List: ");
-            System.out.printf("\nID  %-15s %-26s %-68s %5s  %11s\n", "name", "description", "usage", "price", "expiry date");
+            System.out.printf("\nID  %-15s %-26s %-68s %5s    %11s\n", "name", "description", "usage", "price", "expiry date");
             System.out.println("----------------------------------------------------------------------------------------------------------------------------------------");
 
             while ((line = reader.readLine()) != null) {
@@ -183,8 +133,8 @@ public class Directory {
                 System.out.printf(" %-15s", parts[1]);
                 System.out.printf(" %-26s", parts[2]);
                 System.out.printf(" %-68s", parts[3]);
-                System.out.printf(" %5s ", parts[4]);
-                System.out.printf(" %-11s",parts[5]);
+                System.out.printf(" RM %5s ", parts[4]);
+                System.out.printf("    %-11s",parts[5]);
                 System.out.println();
                 
                 
@@ -199,7 +149,8 @@ public class Directory {
             e.printStackTrace();
         }
     }
-      public static void salesInfo() {
+
+    public static void salesInfo() {
 
        Scanner scanner = new Scanner(System.in);
         
@@ -207,8 +158,9 @@ public class Directory {
         System.out.print("Choose an option: ");
 
         int choice = scanner.nextInt();
+        int quantityLeft = 0;
         scanner.nextLine(); // Consume the newline character
-          System.out.println("");
+        System.out.println("");
 
         switch (choice) {
             case 1:
@@ -231,21 +183,19 @@ public class Directory {
                         String[] parts = line.split(",");
 
                         if (parts.length >= 2 && parts[1].trim().equalsIgnoreCase(medToUpdate)) {
-                            // Update the quantity sold
-                            parts[2] = String.valueOf(newQuantity);
 
                             // Calculate the quantity left after sold
-                            int quantityBeforeSold = Integer.parseInt(parts[3]);
+                            int quantityBeforeSold = Integer.parseInt(parts[4]);
                             parts[4] = String.valueOf(quantityBeforeSold - newQuantity);
+
+                            // Update the quantity sold
+                            newQuantity += Integer.parseInt(parts[2]);
+                            parts[2] = String.valueOf(newQuantity);
                             
                             //display quantity left in stock
-                            System.out.println("\nQuantity left in stock: " + parts[4]);
+                            System.out.println("Quantity left in stock: " + parts[4]);
                            
-                            int quantityLeft = Integer.parseInt(parts[4]);
-                            
-                            //indicate if the quantity is below 5
-                            if( quantityLeft <= 4)
-                                System.out.println("There are only 5 of this medicine left!!!.\nPlease add more immediately");
+                            quantityLeft = Integer.parseInt(parts[4]);
                         }
 
                         writer.write(String.join(",", parts));
@@ -256,14 +206,19 @@ public class Directory {
                     writer.close();
 
                     if (!file.delete()) {
-                        System.out.println("Could not delete the original file.");
+                        System.out.println("\nCould not delete the original file.");
                         return;
                     }
                     if (!tempFile.renameTo(file)) {
-                        System.out.println("Could not rename the temporary file.");
+                        System.out.println("\nCould not rename the temporary file.");
                     }
 
-                    System.out.println("Sales updated successfully.");
+                    System.out.println("\nSales updated successfully.");
+
+                     //indicate if the quantity is below 5
+                    if( quantityLeft <= 4)
+                    System.out.println("\nNOTICE\n--------------------------------------");
+                    System.out.println("There are only " +quantityLeft+ " of this medicine left!!!.\nPlease add more immediately.");
                     
 
                 } catch (IOException e) {

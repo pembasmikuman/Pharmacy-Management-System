@@ -5,14 +5,14 @@ public class Directory {
     
     public static void addItem(String[] args, File database, File temporary, File sales, File tempSales) {
 
+        //declaraton
         Scanner input = new Scanner(System.in);
         String[] parts = {};
         String line;
-        String id;
-        char choice = ' ';
-        int looprun = 0;
+        char choice = 'Y';
     
         try (
+            //initialization
             FileReader Freader = new FileReader(database);
             FileReader SalesReader = new FileReader(sales);
             FileWriter FileWriter = new FileWriter(temporary);
@@ -22,33 +22,26 @@ public class Directory {
             BufferedWriter Swriter = new BufferedWriter(SalesWriter);
             BufferedWriter writer = new BufferedWriter(FileWriter)
         ) {
-            
             System.out.println("\nADD ITEM");
-
-            do {
-
-                if(looprun == 1)
-                System.out.println("\nRE-ADD ITEM");
-
-                System.out.print("ID: ");
-                id = input.next();
-                input.nextLine();
-
-                while ((line = reader.readLine()) != null) {
-                    parts = line.split(",");
-
-                    if(id.equals(parts[0])) {
-                        System.out.println("Item with same ID exist.");
-                        choice = 'Y';
-                        break;
-                    }
-                    else
-                        choice = 'N';
-                }
-                
-                looprun = 1;
-            } while(choice != 'N');
             
+            System.out.print("ID: ");
+            String id = input.next();
+            input.nextLine();    
+
+            while ((line = reader.readLine()) != null) {
+                parts = line.split(",");
+
+                writer.write(line);
+                writer.newLine();
+                Swriter.write(line);
+                Swriter.newLine();
+                
+                if (parts[0].equals(id)) {
+                    System.out.println("Item with same ID exist. try again");
+                    return;
+                }
+            }
+
             System.out.print("Name: ");
             String name = input.nextLine();
             System.out.print("Description: ");
@@ -68,28 +61,32 @@ public class Directory {
             String expiryDate = input.next();
             input.nextLine();
             
-            // Duplicate existing data to the temporary file
+            // Duplicate existing data to the temporary database file
             while ((line = reader.readLine()) != null) {
                 writer.write(line);
                 writer.newLine();
             }
-    
+
+            // Duplicate existing data to the temporary sales file
             while((line = Sreader.readLine()) != null ) {
                 Swriter.write(line);
                 Swriter.newLine();
             }
+
+            // Add new data to the temporary sales file
             Swriter.write(id+ "," +name+ "," +sold+ "," +quantity+ "," +quantity);
             Swriter.newLine();
 
-            // Add new data to the temporary file
+            // Add new data to the temporary  database file
             writer.write(id + "," + name + "," + description + "," + usage + "," + price + "," + expiryDate);
             writer.newLine();
     
             System.out.println("\nItem added successfully.");
-    
+            
         } catch (Exception e) {
             e.printStackTrace();
-        } 
+        }
+        
     }
 
     public static void searchItem(String[] args, File database) throws IOException {
@@ -105,13 +102,15 @@ public class Directory {
             ) {
                 
                 String line;
-   
+                
                 System.out.print("\nEnter Inventory ID to search: ");
                 searchID = input.next();
-   
+                
+                // Read database file line by line
                 while ((line = reader.readLine()) != null) {
                     parts = line.split(",");
-   
+                    
+                    //Print out details for the matching ID
                     if (parts[0].equals(searchID)) {
                         System.out.println("\nInventory Details:");
                         System.out.println("----------------------");
@@ -133,8 +132,6 @@ public class Directory {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     public static void displaying(File database) {
@@ -150,10 +147,11 @@ public class Directory {
             System.out.printf("\nID  %-15s %-26s %-68s %5s    %11s\n", "name", "description", "usage", "price", "expiry date");
             System.out.println("----------------------------------------------------------------------------------------------------------------------------------------");
 
+            //Read database file line by line
             while ((line = reader.readLine()) != null) {
-
                 String[] parts = line.split(",");
 
+                //Print out every item details one row for each loop
                 System.out.printf("%-3s", parts[0]);
                 System.out.printf(" %-15s", parts[1]);
                 System.out.printf(" %-26s", parts[2]);
@@ -177,9 +175,9 @@ public class Directory {
 
         Scanner scanner = new Scanner(System.in);
         int i = 0;
+        int itemIndex = 0;
         int quantityLeft = 0;
         String[][] sales = new String[100][5];
-        int CurrentItem = 23;
         File file = new File("sales.csv");
         File temporary = new File("sales.tmp");
         
@@ -268,6 +266,7 @@ public class Directory {
                     while ((line = reader.readLine()) != null) {
                         String[] parts = line.split(",");
 
+                        
                         if (parts.length >= 2 && parts[1].trim().equalsIgnoreCase(medToUpdate)) {
             
                             parts[4] = String.valueOf(newQuantity);
@@ -296,8 +295,8 @@ public class Directory {
                     e.printStackTrace();
                 }
                 break;
-
-            case 3:
+                
+                case 3:
                 try {
                     BufferedReader reader = new BufferedReader(new FileReader("sales.csv"));
 
@@ -308,7 +307,9 @@ public class Directory {
                     String line;
                     while ((line = reader.readLine()) != null) {
                         String[] parts = line.split(",");
-
+                        itemIndex = Integer.parseInt(parts[0]);
+                        
+                        //USE OF 2D ARRAY
                         sales[i][0] = parts[0];
                         sales[i][1] = parts[1];
                         sales[i][2] = parts[2];
@@ -318,7 +319,7 @@ public class Directory {
                         i++;
                     }
 
-                    for(i=0; i<CurrentItem; i++) {
+                    for(i=0; i<itemIndex; i++) {
 
                         for(int j=0; j<sales[i].length; j++) {
 

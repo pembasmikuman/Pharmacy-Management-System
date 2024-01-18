@@ -1,7 +1,7 @@
 import java.util.*;
 import java.io.*;
 
-public class Directory {
+public class DirectoryNew {
     
     public static void addItem(String[] args, File database, File temporary, File sales, File tempSales) {
 
@@ -152,13 +152,18 @@ public class Directory {
 
     public static void salesInfo() {
 
-       Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
+        int i = 0;
+        int quantityLeft = 0;
+        String[][] sales = new String[100][5];
+        int CurrentItem = 23;
+        File file = new File("sales.csv");
+        File temporary = new File("sales.tmp");
         
-        System.out.println("1. Update Sales\n2. Display Sales");
+        System.out.println("1. Update Sales\n2. Update Stock\n3. Display Sales");
         System.out.print("Choose an option: ");
 
         int choice = scanner.nextInt();
-        int quantityLeft = 0;
         scanner.nextLine(); // Consume the newline character
         System.out.println("");
 
@@ -169,14 +174,11 @@ public class Directory {
                     String medToUpdate = scanner.nextLine();
 
                     System.out.print("Enter the new quantity sold: ");
-                    int newQuantity = scanner.nextInt();
+                    int newQuantitySold = scanner.nextInt();
                     scanner.nextLine(); // Consume the newline character
 
-                    File file = new File("sales.csv");
-                    File tempFile = new File("temp.csv");
-
                     BufferedReader reader = new BufferedReader(new FileReader(file));
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(temporary));
 
                     String line;
                     while ((line = reader.readLine()) != null) {
@@ -186,11 +188,11 @@ public class Directory {
 
                             // Calculate the quantity left after sold
                             int quantityBeforeSold = Integer.parseInt(parts[4]);
-                            parts[4] = String.valueOf(quantityBeforeSold - newQuantity);
+                            parts[4] = String.valueOf(quantityBeforeSold - newQuantitySold);
 
                             // Update the quantity sold
-                            newQuantity += Integer.parseInt(parts[2]);
-                            parts[2] = String.valueOf(newQuantity);
+                            newQuantitySold += Integer.parseInt(parts[2]);
+                            parts[2] = String.valueOf(newQuantitySold);
                             
                             //display quantity left in stock
                             System.out.println("Quantity left in stock: " + parts[4]);
@@ -200,6 +202,7 @@ public class Directory {
 
                         writer.write(String.join(",", parts));
                         writer.newLine();
+
                     }
 
                     reader.close();
@@ -209,7 +212,7 @@ public class Directory {
                         System.out.println("\nCould not delete the original file.");
                         return;
                     }
-                    if (!tempFile.renameTo(file)) {
+                    if (!temporary.renameTo(file)) {
                         System.out.println("\nCould not rename the temporary file.");
                     }
 
@@ -228,6 +231,51 @@ public class Directory {
 
             case 2:
                 try {
+                    System.out.print("Enter the medicine name to update: ");
+                    String medToUpdate = scanner.nextLine();
+
+                    System.out.print("Enter the new quantity: ");
+                    int newQuantity = scanner.nextInt();
+                    scanner.nextLine(); // Consume the newline character
+
+                    BufferedReader reader = new BufferedReader(new FileReader(file));
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(temporary));
+
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        String[] parts = line.split(",");
+
+                        if (parts.length >= 2 && parts[1].trim().equalsIgnoreCase(medToUpdate)) {
+            
+                            parts[4] = String.valueOf(newQuantity);
+                        }
+
+                        writer.write(String.join(",", parts));
+                        writer.newLine();
+
+                    }
+
+                    reader.close();
+                    writer.close();
+
+                    if (!file.delete()) {
+                        System.out.println("\nCould not delete the original file.");
+                        return;
+                    }
+                    if (!temporary.renameTo(file)) {
+                        System.out.println("\nCould not rename the temporary file.");
+                    }
+
+                    System.out.println("\nStocks updated successfully.");
+                    
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case 3:
+                try {
                     BufferedReader reader = new BufferedReader(new FileReader("sales.csv"));
 
                     System.out.println("\nSales For This Month: ");
@@ -238,11 +286,31 @@ public class Directory {
                     while ((line = reader.readLine()) != null) {
                         String[] parts = line.split(",");
 
-                        // Display all sales and quantity left
-                        System.out.printf("%-3s", parts[0]);
-                        System.out.printf(" %-13s", parts[1]);
-                        System.out.printf("\t   %-1s", parts[2]);
-                        System.out.printf("\t\t\t\t\t%-1s", parts[4]);
+                        sales[i][0] = parts[0];
+                        sales[i][1] = parts[1];
+                        sales[i][2] = parts[2];
+                        sales[i][3] = parts[3];
+                        sales[i][4] = parts[4];
+                        
+                        i++;
+                    }
+
+                    for(i=0; i<CurrentItem; i++) {
+
+                        for(int j=0; j<sales[i].length; j++) {
+
+                            if(j==0)
+                            System.out.printf("%-3s",sales[i][j]);
+                            
+                            if(j==1)
+                            System.out.printf(" %-13s", sales[i][j]);
+
+                            if(j==2)
+                            System.out.printf("\t   %-1s", sales[i][j]);
+
+                            if(j==4)
+                            System.out.printf("\t\t\t\t\t%-1s", sales[i][j]);
+                        }
                         System.out.println();
                     }
 

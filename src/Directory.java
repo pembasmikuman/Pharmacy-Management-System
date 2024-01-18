@@ -6,6 +6,11 @@ public class DirectoryNew {
     public static void addItem(String[] args, File database, File temporary, File sales, File tempSales) {
 
         Scanner input = new Scanner(System.in);
+        String[] parts = {};
+        String line;
+        String id;
+        char choice = ' ';
+        int looprun = 0;
     
         try (
             FileReader Freader = new FileReader(database);
@@ -17,11 +22,33 @@ public class DirectoryNew {
             BufferedWriter Swriter = new BufferedWriter(SalesWriter);
             BufferedWriter writer = new BufferedWriter(FileWriter)
         ) {
+            
             System.out.println("\nADD ITEM");
-    
-            System.out.print("ID: ");
-            String id = input.next();
-            input.nextLine();
+
+            do {
+
+                if(looprun == 1)
+                System.out.println("\nRE-ADD ITEM");
+
+                System.out.print("ID: ");
+                id = input.next();
+                input.nextLine();
+
+                while ((line = reader.readLine()) != null) {
+                    parts = line.split(",");
+
+                    if(id.equals(parts[0])) {
+                        System.out.println("Item with same ID exist.");
+                        choice = 'Y';
+                        break;
+                    }
+                    else
+                        choice = 'N';
+                }
+                
+                looprun = 1;
+            } while(choice != 'N');
+            
             System.out.print("Name: ");
             String name = input.nextLine();
             System.out.print("Description: ");
@@ -40,19 +67,17 @@ public class DirectoryNew {
             System.out.print("Expiry Date (MM/yyyy): ");
             String expiryDate = input.next();
             input.nextLine();
-    
+            
             // Duplicate existing data to the temporary file
-            String line;
             while ((line = reader.readLine()) != null) {
                 writer.write(line);
                 writer.newLine();
             }
-
+    
             while((line = Sreader.readLine()) != null ) {
                 Swriter.write(line);
                 Swriter.newLine();
             }
-            
             Swriter.write(id+ "," +name+ "," +sold+ "," +quantity+ "," +quantity);
             Swriter.newLine();
 
@@ -136,8 +161,6 @@ public class DirectoryNew {
                 System.out.printf(" RM %5s ", parts[4]);
                 System.out.printf("    %-11s",parts[5]);
                 System.out.println();
-                
-                
                 
             }
             return;

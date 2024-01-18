@@ -29,8 +29,8 @@ public class Homepage {
                 switch (choice) {
                     case 1:
                         Directory.addItem(args, database, temporary, sales, tempSales);
-                        SwapFile.swapping(database, temporary);
-                        SwapFile.swapping(sales, tempSales);
+                        swapFile.swapping(database, temporary);
+                        swapFile.swapping(sales, tempSales);
                         break;
                     case 2:
                         Directory.searchItem(args, database);

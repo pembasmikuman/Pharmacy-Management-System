@@ -1,7 +1,7 @@
 import java.util.*;
 import java.io.*;
 
-public class DirectoryNew {
+public class Directory {
     
     public static void addItem(String[] args, File database, File temporary, File sales, File tempSales) {
 
